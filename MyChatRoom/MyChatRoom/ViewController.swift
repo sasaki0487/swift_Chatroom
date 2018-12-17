@@ -74,34 +74,39 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
+    /*========== 私訊 ===========*/
     @IBAction func pmButtonPressed(_ sender: Any) {
+        /*因為偷懶，所以把connect時用來輸入使用者名字的textbox跟私訊時用來輸入傳送對象的textbox用同一個*/
         let name: String = self.userTextField.text!
         let message: String = self.messageTextField.text!
         let str = name + ":" + message
+        /*把私訊內容emit給server*/
         self.socket!.emit("private", str)
     }
+    /*========== 斷線 ===========*/
     @IBAction func disconnectButtonPressed(_ sender: Any) {
-        self.socket!.disconnect()
-        self.userTextView.text = ""
+        self.socket!.disconnect()     //斷線
+        self.userTextView.text = ""   //清空用戶列表
     }
+    /*========== 連線 ===========*/
     @IBAction func connectButtonPressed(_ sender: Any) {
-        //叫socket連線到前⾯面已指定的Server
+        //叫socket連線到前⾯已指定的Server
         self.socket!.connect()
         let name: String = self.userTextField.text!
+        //紀錄使用者自己的名字
         self.myname = self.userTextField.text!
         let deadLine = DispatchTime.now() + .milliseconds(500)
         DispatchQueue.main.asyncAfter(deadline: deadLine) {
-            //利用socket傳送 event + message 給server
+            //利用socket傳送註冊訊息跟名字給server
             self.socket!.emit("register", name)
         }
     }
+    /*========== 全頻 ===========*/
     @IBAction func sendButtonPressed(_ sender: Any) {
         let message: String = self.messageTextField.text!
         let str = self.myname! + ": " + message
         self.socket!.emit("user send out message", str)
         self.messageTextField.text = ""
-        
     }
 }
 
